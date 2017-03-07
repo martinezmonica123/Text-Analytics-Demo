@@ -1,5 +1,5 @@
 # Text Analytics I
 
-Basic text analytics demo using Project Gutnberg data.
+Basic text analytics demo using Project Gutenberg data.
 
 
