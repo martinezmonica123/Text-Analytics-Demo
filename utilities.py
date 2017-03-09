@@ -1,16 +1,14 @@
 ''''
 
-	Text analysis tools without NLTK.
-	=================================
+	Text analysis tools implementation without NLTK.
+	================================================
 
 '''
-
 from os import listdir, path
-import string
 import re
 
-STOP_WORDS = set([x.strip() for x in open(
-				path.join(path.dirname(__file__), 'data/stopwords.txt')).read().split('\n')]) # custom stop_words set
+STOP_WORDS = set([x.strip() for x in open(path.join(path.dirname(__file__), 'data/stopwords.txt')).read().split('\n')]) # custom stop_words set
+
 
 def read_file(filename):
 	''' Read the contents of FILENAME and return as string'''
@@ -18,6 +16,7 @@ def read_file(filename):
 	contents = infile.read()
 	infile.close()
 	return contents
+
 
 def list_textfiles(directory):
 	''' Return a list of filenames ending in '.txt' in DIRECTORY'''
@@ -27,40 +26,13 @@ def list_textfiles(directory):
 			textfiles.append(directory + "/" + filename)
 	return textfiles
 
-def word_tokenize(sentence):
-	words = sentence.split()
-	return words
 
-def end_of_sentence(char):
-	''' Sentence Tokenizer helper function:	
-			Determine if character is an end of sentence 
-			delimiter.
-	'''
-	punct = ['!', '?', '.']
-	return char in punct
-
-def sent_tokenize(text):
-	''' Sentence Extraction/Segmentation/Tokenizer:
-			Splits sentences using end_of_sentence() function. 
-			NLTK Version:  nltk.sent_tokenize
-	'''
-	start = 0
-	sentences = []
-	
-	for end, char in enumerate(text):
-		if end_of_sentence(char):
-			sentence = text[start:end]
-			sentences.append(sentence)
-			start = end + 1
-	return sentences
-
+#TODO: add stemming and lemmatization
+#TODO: expand contractions
+#TODO: correct spelling (from pattern.en import suggest from Pattern Library) AND look into algorithm
 def normalize_text(sentence, stopwords=False):
 	''' Using simple raw text data: Perform case conversion; remove newline characters, punctuation, and stop-words. 
 			Does not support html file data.
-		#TODO: add stemming and lemmatization
-		#TODO: expand contractions
-		#TODO: correct spelling (from pattern.en import suggest from Pattern Library) AND look into algorithm
-
 	'''
 	PATTERN = r'[^a-zA-Z0-9 ]' # only extract alpha-numeric characters
 
@@ -87,10 +59,37 @@ def tokenize(text):
 			result.extend(tokens)
 	return result
 
-##################################################################
 
-if __name__ == '__main__':
-    
+def word_tokenize(sentence):
+	words = sentence.split()
+	return words
+
+
+def sent_tokenize(text):
+	''' Sentence Extraction/Segmentation/Tokenizer:
+			Splits sentences using end_of_sentence() function. 
+		NLTK Version:  nltk.sent_tokenize
+	'''
+	start = 0
+	sentences = []
+	
+	for end, char in enumerate(text):
+		if end_of_sentence(char):
+			sentence = text[start:end]
+			sentences.append(sentence)
+			start = end + 1
+	return sentences
+
+
+def end_of_sentence(char):
+	''' Sentence Tokenizer helper function:	
+			Determine if character is an end of sentence delimiter.
+	'''
+	punct = ['!', '?', '.']
+	return char in punct
+
+
+if __name__ == '__main__':    
 	print (normalize_text("...This, is, a, Sentence."))
 
 	#text = read_file("data/austen-emma-excerpt.txt")

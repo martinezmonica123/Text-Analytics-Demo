@@ -1,4 +1,5 @@
 # Gutenberg Project Novels - Start and End Locations
+# url, start and stop string locations
 
 bovary_raw = urlopen("https://www.gutenberg.org/files/2413/2413-0.txt").read().decode('utf8')
 bovary_raw = bovary_raw[1443:666170]

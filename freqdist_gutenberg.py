@@ -23,7 +23,7 @@
 		-Moby Dick; Or, The Whale by Herman Melville
 
 '''
-import nltk 
+import nltk
 
 from nltk.corpus import gutenberg
 from nltk.tokenize import RegexpTokenizer
@@ -32,28 +32,25 @@ from nltk.corpus import stopwords
 from os import path
 from urllib import urlopen
 from collections import Counter
-import random
-
-from PIL import Image
-import numpy as np
-import matplotlib.pyplot as plt
-from wordcloud import WordCloud 
 
 
 STOP_WORDS = set(stopwords.words('english')+["a", "the"]) # custom stop_words set
 STOP_WORDS.update(set([x.strip() for x in open(
 				path.join(path.dirname(__file__), 'data/stopwords.txt')).read().split('\n')])) # custom stop_words set
 
+
 def get_data(url, start, end):
 	data = urlopen(url).read().decode('utf8')
 	data = data[start:end]
 	return data
+
 
 def tokenize_text(data):
 	regex = RegexpTokenizer(r'\w+') #only takes alphanumeric sequences
 	tokens = regex.tokenize(data)
 	text = nltk.Text(tokens)
 	return text
+
 
 #TODO: remove trailing 's'
 def normalize(data, stopwords=False):
@@ -62,6 +59,7 @@ def normalize(data, stopwords=False):
 	else:
 		words = [w.lower() for w in data]
 	return words
+
 
 #TODO: implement own bi-gram algorithm in utilities.py
 def get_bigrams(data, stopwords=False):
@@ -74,6 +72,7 @@ def get_bigrams(data, stopwords=False):
 	else:
 		return Counter(bigrams_list)
 
+
 def term_freq_dist(data, num):
 	frequencies = {}
 	term_total = float(len(data))
@@ -83,6 +82,7 @@ def term_freq_dist(data, num):
 		tf =(count/term_total)*100
 		frequencies[term] = tf
 	return frequencies
+
 
 def pretty_print(data, title):
 	print("%s: " % (title))
@@ -94,26 +94,6 @@ def pretty_print(data, title):
 	print('\n')
 
 
-def create_wordcloud(raw_data, title, bigrams=True):
-	''' Generate Word Cloud -- Word_Cloud Library: https://github.com/amueller/word_cloud '''
-
-	def custom_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
-	    return "hsl(0, 0%%, %d%%)" % random.randint(10, 60)
-	    
-	d = path.dirname(__file__)
-
-	wordcloud = WordCloud(font_path=path.join(d, "fonts/raleway/raleway-light.ttf"), width=500, height=500, margin=20, background_color='white', max_words=20,
-	               stopwords=STOP_WORDS, color_func=custom_color_func, random_state=20)
-	
-	wordcloud.collocations = bigrams
-	wordcloud.generate(raw_data)
-
-	default_colors = wordcloud.to_array()
-	plt.title("Custom colors")
-	plt.imshow(wordcloud)
-	wordcloud.to_file("word_clouds/"+title+".png")
-	print ('Created Word Cloud')
-
 ######################################################
 
 if __name__ == '__main__':
@@ -122,18 +102,14 @@ if __name__ == '__main__':
 		==================================================
 	'''
 
-	raw_data = get_data("https://www.gutenberg.org/files/2701/2701-0.txt", 6529, 1242147 )
-
-	create_wordcloud(raw_data, 'Moby_Dick_WC')
+	# raw_data = get_data("https://www.gutenberg.org/files/2701/2701-0.txt", 6529, 1242147 )
 
 	# word_data = normalize(tokenize_text(raw_data), True)
 	# word_tf_data = term_freq_dist(word_data, 20)
-	#pretty_print(word_tf_data, 'Terms')
+	# pretty_print(word_tf_data, 'Terms')
 
 
 	# bigram_data = normalize(tokenize_text(raw_data))
 	# bigrams = get_bigrams(bigram_data, True)
 	# bg_tf_data = term_freq_dist(bigrams, 20)
 	# pretty_print(bg_tf_data, 'Bi-grams')
-
-

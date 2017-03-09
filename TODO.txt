@@ -1,0 +1,8 @@
+1. separate text-analytics tools into separate files:
+	a. normalize.py  
+	b. feature_extraction.py
+	c. classify.py
+
+2. separate nltk experiments (small scripts rather than implementations go here)
+	a. wordclouds.py
+	b. freqdist_gutenberg.py
