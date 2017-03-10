@@ -1,13 +1,34 @@
 ''''
+	Text Normalization Tools Implementation (without NLTK.)
+	=====================================================
 
-	Text analysis tools implementation without NLTK.
-	================================================
+		1. Get data from file
+		2. Normalize data
+			a. case conversion
+			b. remove newline characters
+			c. remove punctuation
+			d. remove stop-words
+		3. Tokenize data
+			a. sentence segmentation
+			b. word tokenization
+
+	TODO: bi-gram support (maybe n-gram instead)
+	TODO: process HTML files		
 
 '''
 from os import listdir, path
+from urllib import urlopen
+
 import re
 
-STOP_WORDS = set([x.strip() for x in open(path.join(path.dirname(__file__), 'data/stopwords.txt')).read().split('\n')]) # custom stop_words set
+# custom stop-words set
+STOP_WORDS = set([x.strip() for x in open(path.join(path.dirname(__file__), 'data/stopwords.txt')).read().split('\n')])
+
+
+def get_gutenberg_data(url, start, end):
+	data = urlopen(url).read().decode('utf8')
+	data = data[start:end]
+	return data
 
 
 def read_file(filename):
@@ -30,23 +51,23 @@ def list_textfiles(directory):
 #TODO: add stemming and lemmatization
 #TODO: expand contractions
 #TODO: correct spelling (from pattern.en import suggest from Pattern Library) AND look into algorithm
-def normalize_text(sentence, stopwords=False):
+def preprocess(sentence, stopwords=True):
 	''' Using simple raw text data: Perform case conversion; remove newline characters, punctuation, and stop-words. 
-			Does not support html file data.
+		Does not support html file data.
 	'''
 	PATTERN = r'[^a-zA-Z0-9 ]' # only extract alpha-numeric characters
 
-	sentence = sentence.lower().replace('\n', ' ') # case conversion and remove newline characters
-	clean_sent = re.sub(PATTERN, r'', sentence) # remove punctuation by only extracting alpha-numeric characters
-	tokens = word_tokenize(clean_sent) # word tokenization
+	sentence = sentence.lower().replace('\n', ' ')
+	clean_sent = re.sub(PATTERN, r'', sentence)
+	tokens = word_tokenize(clean_sent)
 
 	if not stopwords:
 		return tokens
 	
-	return [w for w in tokens if w not in STOP_WORDS] #remove stop-words
+	return [w for w in tokens if w not in STOP_WORDS]
 
 
-def tokenize(text):
+def tokenize(text, stopwords=True):
 	''' Word Tokenization of raw input data in 2 steps:
 			1. Sentence Tokenization
 			2. Text Normalization
@@ -55,7 +76,7 @@ def tokenize(text):
 	result = []
 	for item in sent_tokenize(text):
 		if item: # prevent empty sentences
-			tokens = normalize_text(item)
+			tokens = preprocess(item)
 			result.extend(tokens)
 	return result
 
@@ -82,23 +103,8 @@ def sent_tokenize(text):
 
 
 def end_of_sentence(char):
-	''' Sentence Tokenizer helper function:	
+	''' Sentence tokenizer helper function:	
 			Determine if character is an end of sentence delimiter.
 	'''
 	punct = ['!', '?', '.']
 	return char in punct
-
-
-if __name__ == '__main__':    
-	print (normalize_text("...This, is, a, Sentence."))
-
-	#text = read_file("data/austen-emma-excerpt.txt")
-
-	#for item in tokenize(text):
-	#	print (item)
-
-	#print (len(sent_tokenize(text)))
-
-	# for filepath in list_textfiles("data/gutenberg/training"):
-	# 	text = read_file(filepath)
-	# 	print(filepath + " has " + str(len(text)) + " characters.")
