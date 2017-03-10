@@ -6,3 +6,5 @@
 2. separate nltk experiments (small scripts rather than implementations go here)
 
 	b. freqdist_gutenberg.py
+
+3. Create separate Test directory
