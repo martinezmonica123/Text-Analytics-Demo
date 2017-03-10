@@ -9,5 +9,5 @@ Basic text analytics demo using Project Gutenberg data.
 
 
 ### Visualizations
-Word Clouds - simple term freq distribution of top Gutenberg novels using NLTK and corresponding word cloud visualizations using Word_Cloud library.
+- Word Clouds - simple term freq distribution of top Gutenberg novels using NLTK and corresponding word cloud visualizations using Word_Cloud library.
 
