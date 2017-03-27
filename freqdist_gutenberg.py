@@ -39,9 +39,10 @@ STOP_WORDS.update(set([x.strip() for x in open(
 				path.join(path.dirname(__file__), 'data/stopwords.txt')).read().split('\n')])) # custom stop_words set
 
 
-def get_data(url, start, end):
+def get_data(url, start=None, end=None):
 	data = urlopen(url).read().decode('utf8')
-	data = data[start:end]
+	if start and end:
+		data = data[start:end]
 	return data
 
 

@@ -5,7 +5,9 @@ Basic text analytics demo using Project Gutenberg data.
 ### Implemented Techniques:
  - Normalization/Preprocessing
  - Tokenization 
- - Feature Extraction - Bag of Words
+ - Feature Extraction 
+    - Bag of Words
+    - TF-IDF
 
 
 ### Visualizations

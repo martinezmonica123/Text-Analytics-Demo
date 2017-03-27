@@ -6,7 +6,8 @@ from PIL import Image
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
-from freq_gutenberg import STOP_WORDS, get_data
+from freqdist_gutenberg import STOP_WORDS, get_data
+from normalization import read_file
 
 
 STOP_WORDS.add("said")
@@ -21,7 +22,7 @@ def create_wordcloud(raw_data, title, bigrams=True):
 	    
 	d = path.dirname(__file__)
 
-	wordcloud = WordCloud(font_path=path.join(d, "fonts/raleway/raleway-light.ttf"), width=500, height=500, margin=20, background_color='white', max_words=20,
+	wordcloud = WordCloud(font_path=path.join(d, "fonts/raleway/raleway-light.ttf"), width=500, height=500, margin=20, background_color='white', max_words=30,
 	               stopwords=STOP_WORDS, color_func=custom_color_func, random_state=20)
 	
 	wordcloud.collocations = bigrams
@@ -33,6 +34,11 @@ def create_wordcloud(raw_data, title, bigrams=True):
 
 
 if __name__ == '__main__':
+	#d = path.dirname(__file__)
+
+	#memento = read_file(path.join(d, "data/memento.txt"))
+	#create_wordcloud(memento, 'Memento')
+
 
 	# mobydick = get_data("https://www.gutenberg.org/files/2701/2701-0.txt", 6529, 1242147)
 	# create_wordcloud(mobydick, 'Moby_Dick')
