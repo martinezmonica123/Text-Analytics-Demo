@@ -1,5 +1,4 @@
-''''
-	Feature Extraction - Technique(s) Implementation (without NLTK)
+'''' Feature Extraction - Technique(s) Implementation (without NLTK)
 	===========================================================
 	
 	Feature extraction = process to generate a numeric representation of text data 
@@ -20,138 +19,54 @@ import pandas as pd
 import math
 
 
-def bag_of_words(corpus, num_feats=50, for_tf_idf=False):
+def initialize_vsm(corpus):
+	#generate corpus vocabulary
+	vocab = generate_vocabulary(corpus)
+
+	#initialize vector space
+	docs = {}
+	for i, doc in enumerate(corpus):
+		name = 'd' + str(i)
+		docs[name] = {'tokens': [], 'count': {}, 'tf': {}, 'idf': {}, 'tf-idf': {}}
+		docs[name]['tokens'].extend(tokenize(doc))
+	return vocab, docs
+
+
+#TODO: MAKE SUCH THAT ONLY N FEATUERS EXTRACTED
+#TODO: UPDATE FUNCTION DESCRIPTION
+def bag_of_words(corpus):
 	""" BAG OF WORDS feature extraction technique.
 		==========================================
 		
-		Given a list of text data get the freq distribution of tokens in a given document 
-		based on the 'n' most common tokens amongst a collection of texts. 
-		The resulting vector details the number of times the most common terms 
-		in the entire collection appear in a specific document.
-
-		
-		Convert text documents into vectors s.t. the weight for each word is equal to its 
-		frequency of occurrence in that document.
-
+		[ADD DESCRIPTION]
 		
 		Arguments:
 			corpus {list} -- List of text data.
-		
-		Keyword Arguments:
-			num_feats {int} -- Total number of features to extract. (default: {50})
-			for_tf_idf {bool} -- Specify if being used for tf_idf calculations, 
-								if true return additional data. (default: {False}) 
-		
+
 		Returns:
-			features {[Counter]} -- word counts of each doc in corpus;
-									list of counter objects that represent vectors s.t. each vector represents 
-									the frequency of all the distinct words that are present in the 
-									 document vector space for that specific text.
-			
-			feature_name {set} -- the set of words across all docs;
+			docs {dictionary} -- the vector space representation of docs in corpus.
+									dictionary that specifies the tokens and token_counts per doc in corpus.
+									docs = {d1: tokens': [], 'count': {}, ... , dn: tokens': [], 'count': {}}
+			vocab {set} -- the set of words across all docs;
 								set of feature names/labels (or words) associated with a given feature value. 
 	"""
-	features = []
-	feature_names, temp_feat_names = set(), Counter()
-	texts = []
-	term_counts = [] 
+	vocab, docs = initialize_vsm(corpus)
 
-	# get unique words list from an amalgamation of all texts in collection
-	for text in corpus:
-		# get word list
-		text_tokens = tokenize(text)
-		#get word counts 
-		term_counts.append(len(text_tokens))
+	#update vector model with term counts as per bag-of-words model
+	for doc in docs:
+		for token in vocab:
+			token_list = docs[doc]['tokens']
+			if token in token_list:
+				docs[doc]['count'][token] = get_count(token, token_list)
+			else:
+				docs[doc]['count'][token] = 0
 
-		# grow features list 
-		#feature_names |= set(text_tokens)
-		temp_feat_names.update(text_tokens)
-		# add token list to text collection 
-		texts.append(text_tokens)
-
-	temp = temp_feat_names.most_common(num_feats)
-	for k, v in temp:
-		feature_names.add(k)
-
-	# get features for each text in text collection
-	for text in texts:
-		curr_text = []
-		for word in text:
-			if word in feature_names:
-				curr_text.append(word)
-		features.append(Counter(curr_text))
-
-	#if data being used for tf-idf then also return term counts for each document
-	if for_tf_idf:
-		return features, term_counts
-	
-	return features, feature_names
+	return docs, vocab
 
 
-def print_features(features, feature_names):
-	''' Matrix-like printing of bag of words feature vectors.
-		=====================================================
-	
-		Arguments:
-			features [list] -- list of vectors that correspond to a given feature label/value.
-			feature_names [list] -- list of feature labels.
-	'''
-	df = pd.DataFrame(data=features, columns=feature_names)
-	df.fillna(0, inplace=True)
-	print df
-
-
-def tf(word, doc_index, term_counts, features):
-	''' Term Frequency:
-		
-		TF = # term appears in doc / total terms in doc
-
-		Using the bag or words model returns the number of times a given 'word'
-		appears in a given document divided by the total number of words in that document.
-		
-		Arguments:
-			word [string] -- the term
-			doc_index [int] -- the index location of the target document in given 'features' collection
-			features [list] -- list of counter objects that 
-								contain term frequencies as produced by bag of words function.
-		
-		Returns:
-			[int] -- the term frequency of a word in a particular document
-	'''
-	return (features[doc_index][word] / float(term_counts[doc_index]))
-
-
-def idf(word, all_features):
-	''' Inverse Document Frequency:
-			 	
-	 	LOG (	   C 	  )
-	 		(  ---------- )
-	 		(	1 + DF(T) )
-
-		The inverse of the document frequency for each term
-		
-		Arguments:
-			word [string] -- the word
-			all_features [counter] -- list of counter objects that represent 
-									the term frequencies of all documents.
-		
-		Returns:
-			idf [int] -- the log of the total number of docs divided 
-							by the document frequency of each term.		
-	'''
-	#the number of documents that contain 'word'
-	df = float(sum(1 for doc in all_features if word in doc))
-	
-	#the total number of docs in collection
-	count = float(len(all_features))
-
-	idf = 1 + math.log((count / (1 + df)), 10)
-	return idf
-
-
-#TODO: tf_idf for all term in all documents -- matrix style
+#TODO: MAKE SUCH THAT ONLY N FEATUERS EXTRACTED
 #TODO: Euclidean norm
-def tf_idf(word, doc_index, term_counts, features):
+def tf_idf(corpus):
 	'''Term Frequency-Inverse Document Frequency:
 		A way to score the importance of words in a document based on how frequently
 		it appears across multiple documents.
@@ -178,20 +93,93 @@ def tf_idf(word, doc_index, term_counts, features):
 			term_counts [list] -- list of term counts of each document
 			features [list] -- list of counter objects
 		Returns:
-
 	'''
-	return tf(word, doc_index, term_counts, features) * idf(word, features)
+	vocab, docs = initialize_vsm(corpus)
+	
+	for doc in docs:
+		token_list = docs[doc]['tokens']
+		for token in token_list:
+			docs[doc]['tf'][token] = tf(token, token_list)
+			docs[doc]['idf'][token] = idf(token, docs)
+			docs[doc]['tf-idf'][token] = docs[doc]['tf'][token] * docs[doc]['idf'][token]
+	
+	return vocab, docs
+
+
+# ------------------------ HELPER FUNCTIONS ------------------------
+
+
+def print_features(docs, vocab, bow=False, tfidf=False):
+	''' Matrix-like printing of feature vectors.
+		=====================================================
+	
+		Arguments:
+			docs [dictionary] -- list of vectors that correspond to a given feature label/value.
+			vocab [list] -- list of feature labels.
+		Keyword Arguments:
+			bow [bool] -- aka Bag of Words: specifies the type of data  {default: False}
+			tfidf [bool] -- aka TF-IDF: specifies the type of data {default: False}
+	'''
+	features = []
+	for doc in docs:
+		counts = docs[doc]['count']
+		tf_idf = docs[doc]['tf-idf']
+		
+		if bow:
+			features.append(counts)
+		elif tfidf:
+			features.append(tf_idf)
+
+	df = pd.DataFrame(data=features, columns=vocab, index=docs)
+	df.fillna(0, inplace=True)
+	print df
+
+
+#TODO: UPDATE FUNCTION DESCRIPTION
+def generate_vocabulary(docs):
+	#unique vocab list across all docs
+	vocab = set()
+	for doc in docs:
+		tokens = tokenize(doc)
+		vocab.update(tokens)
+	return vocab
+
+
+#TODO: UPDATE FUNCTION DESCRIPTION
+def get_count(word, tokens):
+	counts = Counter(tokens)
+	return counts[word]
+
+
+#TODO: UPDATE FUNCTION DESCRIPTION
+def tf(word, tokens):
+	count = get_count(word, tokens)
+	total_count = len(tokens)
+	return (count / float(total_count))
+
+
+#TODO: UPDATE FUNCTION DESCRIPTION
+def idf(word, docs):
+	#number of docs containing 'word'
+	df = float(sum(1 for doc in docs if word in docs[doc]['tokens']))
+	#number documents in collection
+	c = len(docs)
+	return (1 + math.log10((c) / (1 + df)))
 
 
 if __name__ == "__main__":
 	
 	data = ['the big big truck is super far from me and my car.', 'the big big car is super far from me and my car.']
 
+	# data = []
 	# data.append(get_gutenberg_data("https://www.gutenberg.org/files/2701/2701-0.txt", 6529, 1242147))
 	# data.append(get_gutenberg_data("https://www.gutenberg.org/files/2413/2413-0.txt", 1443, 666170))
 	
-	features, term_counts = bag_of_words(data, num_feats=5, for_tf_idf=True)
-	
-	# print_features(features, feature_names)
-	# print(tf_idf('big', 0, term_counts, features))
+	vocab, docs = tf_idf(data)
+	# for d in docs:
+	# 	print(d)
+	# 	print(docs[d]['tf-idf'])
+	# 	print('\n')
 
+	print_features(docs, vocab, tfidf=True)
+	# print(tf_idf('big', 0, term_counts, features))
