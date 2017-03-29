@@ -25,6 +25,7 @@ import re
 STOP_WORDS = set([x.strip() for x in open(path.join(path.dirname(__file__), 'data/stopwords.txt')).read().split('\n')])
 
 
+#TODO: UPDATE DESCRIPTION
 def get_gutenberg_data(url, start, end):
 	data = urlopen(url).read().decode('utf8')
 	data = data[start:end]
@@ -55,7 +56,8 @@ def preprocess(sentence, stopwords=True):
 	''' Using simple raw text data: Perform case conversion; remove newline characters, punctuation, and stop-words. 
 		Does not support html file data.
 	'''
-	PATTERN = r'[^a-zA-Z0-9 ]' # only extract alpha-numeric characters
+	# only extract alpha-numeric characters
+	PATTERN = r'[^a-zA-Z0-9 ]'
 
 	sentence = sentence.lower().replace('\n', ' ')
 	clean_sent = re.sub(PATTERN, r'', sentence)
@@ -71,14 +73,19 @@ def tokenize(text, stopwords=True):
 	''' Word Tokenization of raw input data in 2 steps:
 			1. Sentence Tokenization
 			2. Text Normalization
-		NLTK version: nltk.tokenize,RegexpTokenizer(r'\w+')
+			
+			NLTK version: nltk.tokenize,RegexpTokenizer(r'\w+')
 	'''
 	result = []
 	for item in sent_tokenize(text):
-		if item: # prevent empty sentences
+		# prevent empty sentences
+		if item:
 			tokens = preprocess(item)
 			result.extend(tokens)
 	return result
+
+
+############################## Helper Functions ########################################
 
 
 def word_tokenize(sentence):
@@ -89,7 +96,7 @@ def word_tokenize(sentence):
 def sent_tokenize(text):
 	''' Sentence Extraction/Segmentation/Tokenizer:
 			Splits sentences using end_of_sentence() function. 
-		NLTK Version:  nltk.sent_tokenize
+			NLTK Version:  nltk.sent_tokenize
 	'''
 	start = 0
 	sentences = []

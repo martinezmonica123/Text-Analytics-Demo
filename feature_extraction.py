@@ -54,14 +54,14 @@ def bag_of_words(corpus):
 
 	#update vector model with term counts as per bag-of-words model
 	for doc in docs:
+		token_list = docs[doc]['tokens']
+		counts = get_count(token_list)
 		for token in vocab:
-			token_list = docs[doc]['tokens']
 			if token in token_list:
-				docs[doc]['count'][token] = get_count(token, token_list)
+				docs[doc]['count'][token] = counts[token]
 			else:
 				docs[doc]['count'][token] = 0
-
-	return docs, vocab
+	return vocab, docs
 
 
 #TODO: MAKE SUCH THAT ONLY N FEATUERS EXTRACTED
@@ -96,6 +96,7 @@ def tf_idf(corpus):
 	'''
 	vocab, docs = initialize_vsm(corpus)
 	
+	#update vector model with as per tf-idf model
 	for doc in docs:
 		token_list = docs[doc]['tokens']
 		for token in token_list:
@@ -146,9 +147,9 @@ def generate_vocabulary(docs):
 
 
 #TODO: UPDATE FUNCTION DESCRIPTION
-def get_count(word, tokens):
+def get_count(tokens):
 	counts = Counter(tokens)
-	return counts[word]
+	return counts
 
 
 #TODO: UPDATE FUNCTION DESCRIPTION
@@ -167,19 +168,44 @@ def idf(word, docs):
 	return (1 + math.log10((c) / (1 + df)))
 
 
+#TODO: DOCUMENT
+def get_top_features(docs, num, type):
+	'''[summary]
+	
+		[description]
+		
+		Arguments:
+			docs [dictionary] -- [description]
+			num [int] -- [description]
+			type [string] -- [description]
+		Returns:
+			temp [Counter]
+	'''
+	if type == 'bow':
+		for d in docs:
+			bow = docs[d]['count']
+			top = Counter(bow).most_common(num)
+	
+	elif type == 'tfidf':
+		for d in docs:
+			tfidf = docs[d]['tf-idf']
+			top = Counter(tfidf).most_common(num)
+	
+	return(top)
+
+
 if __name__ == "__main__":
 	
-	data = ['the big big truck is super far from me and my car.', 'the big big car is super far from me and my car.']
+	# data = ['the big big truck is super far from me and my car.', 'the big big car is super far from me and my car.']
 
-	# data = []
-	# data.append(get_gutenberg_data("https://www.gutenberg.org/files/2701/2701-0.txt", 6529, 1242147))
-	# data.append(get_gutenberg_data("https://www.gutenberg.org/files/2413/2413-0.txt", 1443, 666170))
+	data = []
+	data.append(get_gutenberg_data("https://www.gutenberg.org/files/2701/2701-0.txt", 6529, 1242147))
+	data.append(get_gutenberg_data("https://www.gutenberg.org/files/2413/2413-0.txt", 1443, 666170))
 	
-	vocab, docs = tf_idf(data)
-	# for d in docs:
-	# 	print(d)
-	# 	print(docs[d]['tf-idf'])
-	# 	print('\n')
+	# vocab, docs = tf_idf(data)
+	vocab, docs = bag_of_words(data)
+	
+	print(get_top_features(docs, 10, 'bow'))
 
-	print_features(docs, vocab, tfidf=True)
+	# print_features(docs, vocab, bow=True)
 	# print(tf_idf('big', 0, term_counts, features))
