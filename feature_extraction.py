@@ -72,17 +72,17 @@ def tf_idf(corpus, ids=[]):
 	A way to score the importance of words in a document based on how frequently
 	it appears across multiple documents.
 
-		TF-IDF = 	TF * [ 1 + LOG    C       ]
-				 		            ---------
-				 		            1 + DF(T)
-				
-			 	
-			TF = word counts (what is computed using bag of words)
-			DF = the number of documents that contain a given word
-			C = number of documents in corpus
-		
-		[to normalize: use euclidean norm aka the square root 
-		of the sum of the square of each term's tf-idf]
+	TF-IDF = 	TF * [ 1 + LOG    C       ]
+			 		            ---------
+			 		            1 + DF(T)
+			
+		 	
+		TF = word counts (what is computed using bag of words)
+		DF = the number of documents that contain a given word
+		C = number of documents in corpus
+	
+	[to normalize: use euclidean norm aka the square root 
+	of the sum of the square of each term's tf-idf]
 
 	If a word appears frequently in a document it's important
 	BUUUT
