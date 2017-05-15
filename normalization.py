@@ -11,53 +11,27 @@
 		3. Tokenize data
 			a. sentence segmentation
 			b. word tokenization
-
-	TODO: bi-gram support (maybe n-gram instead)
-	TODO: process HTML files		
-
 '''
-from os import listdir, path
-from urllib import urlopen
 
+
+#TODO: bi-gram support (maybe n-gram instead)
+#TODO: variables for film script stop-words
+
+from os import listdir, path
 import re
 
 # custom stop-words set
-STOP_WORDS = set([x.strip() for x in open(path.join(path.dirname(__file__), 'data/stopwords.txt')).read().split('\n')])
-
-
-#TODO: UPDATE DESCRIPTION
-def get_gutenberg_data(url, start, end):
-	data = urlopen(url).read().decode('utf8')
-	data = data[start:end]
-	return data
-
-
-def read_file(filename):
-	''' Read the contents of FILENAME and return as string'''
-	infile = open(filename)
-	contents = infile.read()
-	infile.close()
-	return contents
-
-
-def list_textfiles(directory):
-	''' Return a list of filenames ending in '.txt' in DIRECTORY'''
-	textfiles = []
-	for filename in listdir(directory):
-		if filename.endswith(".txt"):
-			textfiles.append(directory + "/" + filename)
-	return textfiles
-
+STOP_WORDS = set([x.strip() for x in open(path.join(path.dirname(__file__), 'data/other/stopwords.txt')).read().split('\n')])
+SCRIPT = set()
 
 #TODO: add stemming and lemmatization
 #TODO: expand contractions
 #TODO: correct spelling (from pattern.en import suggest from Pattern Library) AND look into algorithm
 def preprocess(sentence, stopwords=True):
 	''' Using simple raw text data: Perform case conversion; remove newline characters, punctuation, and stop-words. 
-		Does not support html file data.
 	'''
-	# only extract alpha-numeric characters
-	PATTERN = r'[^a-zA-Z0-9 ]'
+	# only extract alpha characters
+	PATTERN = r'[^a-zA-Z]'
 
 	sentence = sentence.lower().replace('\n', ' ')
 	clean_sent = re.sub(PATTERN, r'', sentence)
@@ -110,8 +84,7 @@ def sent_tokenize(text):
 
 
 def end_of_sentence(char):
-	''' Sentence tokenizer helper function:	
-			Determine if character is an end of sentence delimiter.
+	''' Sentence tokenizer helper function:	Determine if character is an end of sentence delimiter.
 	'''
 	punct = ['!', '?', '.']
 	return char in punct

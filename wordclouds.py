@@ -6,8 +6,8 @@ from PIL import Image
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
-from freqdist_gutenberg import STOP_WORDS, get_data
-from normalization import read_file
+from normalization import STOP_WORDS
+from data_scraping import read_textfile
 
 
 STOP_WORDS.add("said")
@@ -34,29 +34,7 @@ def create_wordcloud(raw_data, title, bigrams=True):
 
 
 if __name__ == '__main__':
-	#d = path.dirname(__file__)
+	# d = path.dirname(__file__)
 
-	#memento = read_file(path.join(d, "data/memento.txt"))
-	#create_wordcloud(memento, 'Memento')
-
-
-	# mobydick = get_data("https://www.gutenberg.org/files/2701/2701-0.txt", 6529, 1242147)
-	# create_wordcloud(mobydick, 'Moby_Dick')
-
-	# madamebovary = get_data("https://www.gutenberg.org/files/2413/2413-0.txt", 1443, 666170)
-	# create_wordcloud(madamebovary, 'Madame_Bovary')
-
-	# dracula = get_data("https://www.gutenberg.org/cache/epub/345/pg345.txt", 4173, 863843)
-	# create_wordcloud(dracula, 'Dracula')
-
-	# huckfinn = get_data("https://www.gutenberg.org/files/76/76-0.txt", 9804, 587674)
-	# create_wordcloud(huckfinn, 'Huck_Finn')
-
-	# frankenstein = get_data("https://www.gutenberg.org/cache/epub/84/pg84.txt", 798, 429467)
-	# create_wordcloud(frankenstein, 'Frankenstein')
-
-	# metamorphosis = get_data("https://www.gutenberg.org/cache/epub/5200/pg5200.txt", 871, 122000)
-	# create_wordcloud(metamorphosis, 'Metamorphosis')
-
-	# emma = get_data("https://www.gutenberg.org/files/158/158-0.txt", 667, 899917) 
-	# create_wordcloud(emma, 'Emma')
+	# memento = read_textfile(path.join(d, "data/memento.txt"))
+	# create_wordcloud(memento, 'Memento')
